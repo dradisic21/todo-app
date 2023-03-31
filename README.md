@@ -13,5 +13,5 @@ Install npm version: 8.15.0
 
 - [ ] Add a todo item
 - [ x ] List todo items
-- [ ] Remove todo item
+- [ x ] Remove todo item
 - [ x ] Mark todo item as done
