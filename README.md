@@ -15,3 +15,5 @@ Install npm version: 8.15.0
 - [ x ] List todo items
 - [ x ] Remove todo item
 - [ x ] Mark todo item as done
+- [  ] Sort by name
+- [ x ] Filter by name

@@ -1,52 +1,50 @@
 import { useState } from "react";
 
-const defaultItems = [
-  {
-    id: 1,
-    text: "Lorem ipsum",
-    done: false,
-  },
-  {
-    id: 2,
-    text: "Lorem ipsum dolor",
-    done: true,
-  },
-];
-
 function App() {
-  const [items, setItems] = useState(defaultItems);
+  const [items, setItems] = useState([]);
   const [formState, setFormState] = useState({
     text: "",
   });
+  const [sort, setSort] = useState("createAtDesc");
 
-  const itemComponents = items.map((item) => {
-    const handleChange = () => {
-      setItems(
-        items.map((newItem) => {
-          if (newItem.id === item.id) {
-            return { ...newItem, done: !item.done };
-          }
-          return newItem;
-        })
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
+  };
+
+  const itemComponents = items
+    .sort((a, b) => {
+      if (sort === "createAtAsc") {
+        return a.createAt - b.createAt;
+      }
+      return b.createAt - a.createAt;
+    })
+    .map((item) => {
+      const handleChange = () => {
+        setItems(
+          items.map((newItem) => {
+            if (newItem.id === item.id) {
+              return { ...newItem, done: !item.done };
+            }
+            return newItem;
+          })
+        );
+      };
+
+      const handleClick = () => {
+        setItems(
+          items.filter((newItem) => {
+            return newItem.id !== item.id;
+          })
+        );
+      };
+
+      return (
+        <div key={item.id}>
+          <input type="checkbox" checked={item.done} onChange={handleChange} />
+          {item.text} ({new Date(item.createAt).toUTCString()})<button onClick={handleClick}>X</button>
+        </div>
       );
-    };
-
-    const handleClick = () => {
-      setItems(
-        items.filter((newItem) => {
-          return newItem.id !== item.id;
-        })
-      );
-    };
-
-    return (
-      <div key={item.id}>
-        <input type="checkbox" checked={item.done} onChange={handleChange} />
-        {item.text}
-        <button onClick={handleClick}>X</button>
-      </div>
-    );
-  });
+    });
 
   const handleChange = (e) => {
     setFormState({
@@ -54,18 +52,20 @@ function App() {
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubmit = (e) => { 
+  const handleSubmit = (e) => {
     e.preventDefault();
     setItems([
-      ...items,
+      ...items, // uzimamo postojece iz state-a
       {
-        id: Date.now(),
+        id: Date.now(), /// dodajemo novi item u state
         text: formState.text,
         done: false,
-      }
-    ])
-    setFormState({...formState, text: ''});
-  }
+        createAt: Date.now(),
+      },
+    ]);
+    setFormState({ ...formState, text: "" });
+  };
+  
 
   return (
     <div>
@@ -79,6 +79,10 @@ function App() {
         />
         <button type="submit">Add</button>
       </form>
+      <select onChange={handleSortChange} defaultValue={sort}>
+        <option value="createAtAsc">Create at (Ascending)</option>
+        <option value="createAtDesc">Create at (Descending)</option>
+      </select>
       {itemComponents}
     </div>
   );
